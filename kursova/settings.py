@@ -38,7 +38,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    'accounts',
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'volodumer2005@gmail.com'
+EMAIL_HOST_PASSWORD = 'thmo tjih xokp ifmx'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+AUTH_USER_MODEL = 'accounts.User'
+
+
+SESSION_COOKIE_AGE = 60 * 60
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

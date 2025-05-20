@@ -1,10 +1,11 @@
-from django.shortcuts import render
-from .models import Task
+from django.shortcuts import redirect, render
 
 
 def index(request):
-    tasks = Task.objects.all()
-    return render(request,'main/index.html', {'title': 'Main site page', 'tasks': tasks})
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    return render(request, 'main/index.html')
 
 def dashboard(request):
     return render(request,'main/dashboard.html')

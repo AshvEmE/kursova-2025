@@ -56,7 +56,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 AUTH_USER_MODEL = 'accounts.User'
 
 
-SESSION_COOKIE_AGE = 60 * 60
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -73,7 +73,7 @@ ROOT_URLCONF = 'kursova.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'main', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

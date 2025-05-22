@@ -1,0 +1,41 @@
+[33mcommit a34ba004285e991d90f0375a6df22a6185d8bc0e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: ashvEmE <ashveme@gmail.com>
+Date:   Wed May 21 20:34:10 2025 +0300
+
+    V1.2
+
+[33mcommit 7690f40fbd557c64a52761099af5b923cd9d5f33[m
+Author: ashvEmE <ashveme@gmail.com>
+Date:   Tue May 20 22:09:20 2025 +0300
+
+    Оновлення проєкту: нові шаблони, models, views, migration=
+
+[33mcommit 1eba6cc8453920aa43b2d662fb1bf117bd71c354[m
+Author: ashvEmE <ashveme@gmail.com>
+Date:   Tue May 20 22:07:29 2025 +0300
+
+    Оновлення проєкту
+
+[33mcommit 89d766605960866c4ac1c7991aefbc83a6398a72[m
+Author: ashvEmE <ashveme@gmail.com>
+Date:   Tue May 20 21:26:38 2025 +0300
+
+    Оновлення проєкту
+
+[33mcommit ebb7fb6d9a9dcc41a38ad912308a0ea5bcb8f52b[m
+Author: ashvEmE <ashveme@gmail.com>
+Date:   Tue May 20 21:19:48 2025 +0300
+
+    Оновлення проєкту: зміни уsettings
+
+[33mcommit 34301e0b03cd7baa5b8ad848558a4b4d411c4c8e[m
+Author: ashvEmE <ashveme@gmail.com>
+Date:   Tue May 20 21:09:41 2025 +0300
+
+    Оновлення проєкту: зміни у views, models, HTML, migrations тощо
+
+[33mcommit b00e095ba40d0a6b84327c5eee4cfc2426f200ea[m
+Author: ashvEmE <ashveme@gmail.com>
+Date:   Tue May 20 18:39:18 2025 +0300
+
+    Initial commit

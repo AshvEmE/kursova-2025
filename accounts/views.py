@@ -11,13 +11,13 @@ def registration(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.email_confirmation_code = str(uuid.uuid4())[:6].upper()  # код підтвердження
+            user.email_confirmation_code = str(uuid.uuid4())[:6].upper()  # confirmation code
             user.email_confirmed = False
             user.save()
 
             send_confirmation_email(user)
 
-            request.session['user_id'] = user.id  # для підтвердження
+            request.session['user_id'] = user.id  # for confirmation
 
             return redirect('econfirm')
     else:
@@ -34,12 +34,12 @@ def login(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 if not user.email_confirmed:
-                    error = "Будь ласка, підтвердьте email перед входом."
+                    error = "Please confirm your email before logging in."
                 else:
                     auth_login(request, user)
-                    return redirect('home')  # або інша сторінка
+                    return redirect('home')  # or another page
             else:
-                error = 'Невірний email або пароль'
+                error = 'Invalid email or password'
     else:
         form = LoginForm()
     return render(request, 'accounts/login.html', {'form': form, 'error': error})
@@ -63,15 +63,9 @@ def econfirm(request):
             auth_login(request, user)
             return redirect('home')
         else:
-            error = "Невірний код підтвердження"
+            error = "Invalid confirmation code"
     return render(request, 'accounts/e-confirm.html', {'error': error})
-
-
-
-
-
 
 def logout_view(request):
     logout(request)
-    return redirect('login')  # після виходу редірект на сторінку логіну
-
+    return redirect('login')  # redirect to login page after logout

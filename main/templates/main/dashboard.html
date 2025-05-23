@@ -1,10 +1,55 @@
 {% extends 'main/base.html' %}
+
 {% block title %}
-DashBoard - CompositeEM Lab
-{%  endblock %}
+Dashboard - CompositeEM Lab
+{% endblock %}
 
 {% block content %}
- <div class="container-fluid mt-5 px-5">
-    <h1>Dashboard</h1>
-  </div>
+<div class="container mt-5">
+  <h1 class="mb-4">Dashboard</h1>
+
+  {% for plot in saved_plots %}
+    <div class="card mb-5 shadow border-0">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5
+          hx-get="{% url 'edit_plot_name' plot.id %}"
+          hx-trigger="click"
+          hx-target="this"
+          hx-swap="outerHTML"
+          class="editable-title m-0"
+          style="cursor: pointer;"
+        >
+          {{ plot.name }}
+        </h5>
+        <small class="text-muted">{{ plot.created_at|date:"Y-m-d H:i" }}</small>
+      </div>
+
+      <div class="card-body d-flex gap-4 flex-wrap flex-md-nowrap">
+        <div class="flex-grow-1 text-center">
+          <img src="data:image/png;base64,{{ plot.image_base64 }}" class="img-fluid border rounded" alt="Plot">
+        </div>
+
+        <div style="min-width: 260px;">
+          <p><strong>Model:</strong> {{ plot.model }}</p>
+          <p><strong>Shape:</strong> {{ plot.shape }}</p>
+          <p><strong>ε Matrix:</strong> {{ plot.eps_m }}</p>
+          <p><strong>ε Inclusions:</strong> {{ plot.eps_i }}</p>
+          <p><strong>Volume Fraction:</strong> {{ plot.f_range }}</p>
+          {% if plot.model == "McLachlan" %}
+            <p><strong>s:</strong> {{ plot.s_param }}</p>
+            <p><strong>t:</strong> {{ plot.t_param }}</p>
+            <p><strong>φ<sub>c</sub>:</strong> {{ plot.phi_c_param }}</p>
+          {% endif %}
+
+          <form method="POST" action="{% url 'delete_plot' plot.id %}" class="mt-5 text-end">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>No saved plots found.</p>
+  {% endfor %}
+</div>
 {% endblock %}

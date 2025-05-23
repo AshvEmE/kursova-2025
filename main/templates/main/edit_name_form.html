@@ -1,0 +1,11 @@
+<form
+  hx-post="{% url 'update_plot_name' plot.id %}"
+  hx-target="this"
+  hx-swap="outerHTML"
+>
+  {% csrf_token %}
+  <div class="d-flex align-items-center">
+    <input type="text" name="name" value="{{ plot.name }}" class="form-control form-control-sm w-75">
+    <button type="submit" class="btn btn-primary btn-sm ms-2">Зберегти</button>
+  </div>
+</form>

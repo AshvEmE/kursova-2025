@@ -5,102 +5,126 @@ Main - CompositeEM Lab
 {% endblock %}
 
 {% block content %}
-
 <div class="container mt-5">
-  <h2>Effective Medium Modelling</h2>
+  <h2 class="mb-4">Effective Medium Modelling</h2>
 
   {% if error %}
-    <div class="alert alert-danger mt-3">{{ error }}</div>
+    <div class="alert alert-danger">{{ error }}</div>
   {% endif %}
 
-  <form method="post" class="row g-3 mt-4" id="em-form">
-    {% csrf_token %}
-
-    <!-- Model -->
-    <div class="col-md-4">
-      <label for="model" class="form-label">Model</label>
-      <select class="form-select" name="model" id="model">
-        <option value="Maxwell-Garnett" {% if request.POST.model == "Maxwell-Garnett" %}selected{% endif %}>Maxwell-Garnett</option>
-        <option value="Bruggeman" {% if request.POST.model == "Bruggeman" %}selected{% endif %}>Bruggeman</option>
-        <option value="Coherent Potential" {% if request.POST.model == "Coherent Potential" %}selected{% endif %}>Coherent Potential</option>
-        <option value="McLachlan" {% if request.POST.model == "McLachlan" %}selected{% endif %}>McLachlan</option>
-      </select>
-    </div>
-
-    <!-- Shape -->
-    <div class="col-md-4">
-      <label for="shape" class="form-label">Shape of Inclusions</label>
-      <select class="form-select" name="shape" id="shape">
-        <option value="sphere" {% if request.POST.shape == "sphere" %}selected{% endif %}>sphere</option>
-        <option value="needle" {% if request.POST.shape == "needle" %}selected{% endif %}>needle</option>
-        <option value="disc" {% if request.POST.shape == "disc" %}selected{% endif %}>disc</option>
-      </select>
-    </div>
-
-    <!-- ε of Matrix -->
-    <div class="col-md-4">
-      <label for="eps_m" class="form-label">ε of Matrix</label>
-      <input type="text" class="form-control" id="eps_m" name="eps_m"
-             pattern="^[-+*/.0-9jJ\s]*$"
-             title="Enter a valid complex number, e.g. 2.9+0.09j"
-             value="{{ request.POST.eps_m|default:'' }}">
-    </div>
-
-    <!-- ε of Inclusions -->
-    <div class="col-md-4">
-      <label for="eps_i" class="form-label">ε of Inclusions</label>
-      <input type="text" class="form-control" id="eps_i" name="eps_i"
-             pattern="^[-+*/.0-9jJ\s]*$"
-             title="Enter a valid complex number, e.g. 10-2j"
-             value="{{ request.POST.eps_i|default:'' }}">
-    </div>
-
-    <!-- Volume fraction -->
+  <div class="row">
+    <!-- Left: Graph -->
     <div class="col-md-6">
-      <label for="f_range" class="form-label">Volume Fraction (start, end, step)</label>
-      <input type="text" class="form-control" id="f_range" name="f_range"
-             pattern="^[-+]?[0-9]*\.?[0-9]+,\s*[-+]?[0-9]*\.?[0-9]+,\s*[-+]?[0-9]*\.?[0-9]+$"
-             title="Enter 3 comma-separated numbers: start, end, step"
-             value="{{ request.POST.f_range|default:'' }}">
+      <div id="graph-container">
+        {% if plot %}
+          <h5>Resulting Graph:</h5>
+          <img id="graph-img" src="data:image/png;base64,{{ plot }}" class="img-fluid border rounded" />
+        {% endif %}
+      </div>
     </div>
 
-    <!-- McLachlan Parameters -->
-    <div class="col-md-4 mc-params" style="display: none;">
-      <label for="s_param" class="form-label">s parameter</label>
-      <input type="text" class="form-control" id="s_param" name="s_param"
-             value="{{ request.POST.s_param|default:'1.0' }}">
-    </div>
+    <!-- Right: Form -->
+    <div class="col-md-6">
+      <form method="post" class="row g-3" id="em-form">
+        {% csrf_token %}
 
-    <div class="col-md-4 mc-params" style="display: none;">
-      <label for="t_param" class="form-label">t parameter</label>
-      <input type="text" class="form-control" id="t_param" name="t_param"
-             value="{{ request.POST.t_param|default:'1.0' }}">
-    </div>
+        <!-- Model -->
+        <div class="col-12">
+          <label for="model" class="form-label">Model</label>
+          <select class="form-select" name="model" id="model">
+            <option value="Maxwell-Garnett" {% if request.POST.model == "Maxwell-Garnett" %}selected{% endif %}>Maxwell-Garnett</option>
+            <option value="Bruggeman" {% if request.POST.model == "Bruggeman" %}selected{% endif %}>Bruggeman</option>
+            <option value="Coherent Potential" {% if request.POST.model == "Coherent Potential" %}selected{% endif %}>Coherent Potential</option>
+            <option value="McLachlan" {% if request.POST.model == "McLachlan" %}selected{% endif %}>McLachlan</option>
+          </select>
+        </div>
 
-    <div class="col-md-4 mc-params" style="display: none;">
-      <label for="phi_c_param" class="form-label">φ<sub>c</sub> parameter</label>
-      <input type="text" class="form-control" id="phi_c_param" name="phi_c_param"
-             value="{{ request.POST.phi_c_param|default:'0.5' }}">
-    </div>
+        <!-- Shape -->
+        <div class="col-12">
+          <label for="shape" class="form-label">Shape of Inclusions</label>
+          <select class="form-select" name="shape" id="shape">
+            <option value="sphere" {% if request.POST.shape == "sphere" %}selected{% endif %}>sphere</option>
+            <option value="needle" {% if request.POST.shape == "needle" %}selected{% endif %}>needle</option>
+            <option value="disc" {% if request.POST.shape == "disc" %}selected{% endif %}>disc</option>
+          </select>
+        </div>
 
-    <!-- Buttons -->
-    <div class="col-12 d-flex gap-3">
-      <button type="submit" class="btn btn-primary">Build Graph</button>
-      <button type="button" class="btn btn-outline-secondary" id="clear-btn">
-        <span class="rotate-icon me-1" id="clear-icon">&#x21bb;</span> Clear
-      </button>
-    </div>
-  </form>
+        <!-- epsilon inputs -->
+        <div class="col-12">
+          <label for="eps_m" class="form-label">ε of Matrix</label>
+          <input type="text" class="form-control" id="eps_m" name="eps_m" value="{{ request.POST.eps_m|default:'' }}">
+        </div>
 
-  {% if plot %}
-    <div class="mt-5">
-      <h5>Resulting Graph:</h5>
-      <img alt="Resulting Graph" src="data:image/png;base64,{{ plot }}" class="img-fluid" />
+        <div class="col-12">
+          <label for="eps_i" class="form-label">ε of Inclusions</label>
+          <input type="text" class="form-control" id="eps_i" name="eps_i" value="{{ request.POST.eps_i|default:'' }}">
+        </div>
+
+        <!-- Volume fraction -->
+        <div class="col-12">
+          <label for="f_range" class="form-label">Volume Fraction (start, end, step)</label>
+          <input type="text" class="form-control" id="f_range" name="f_range" value="{{ request.POST.f_range|default:'' }}">
+        </div>
+
+        <!-- McLachlan parameters -->
+        <div class="col-12 mc-params" style="display: none;">
+          <label for="s_param" class="form-label">s parameter</label>
+          <input type="text" class="form-control" id="s_param" name="s_param" value="{{ request.POST.s_param|default:'1.0' }}">
+        </div>
+
+        <div class="col-12 mc-params" style="display: none;">
+          <label for="t_param" class="form-label">t parameter</label>
+          <input type="text" class="form-control" id="t_param" name="t_param" value="{{ request.POST.t_param|default:'1.0' }}">
+        </div>
+
+        <div class="col-12 mc-params" style="display: none;">
+          <label for="phi_c_param" class="form-label">φ<sub>c</sub> parameter</label>
+          <input type="text" class="form-control" id="phi_c_param" name="phi_c_param" value="{{ request.POST.phi_c_param|default:'0.5' }}">
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12 d-flex gap-2 align-items-center">
+          <button type="submit" class="btn btn-primary">Build Graph</button>
+          <button type="button" class="btn btn-outline-secondary" id="clear-btn">
+            <span class="rotate-icon me-1" id="clear-icon">↻</span> Clear
+          </button>
+          <button type="button" id="save-button" class="btn btn-success {% if not plot %}d-none{% endif %}" data-bs-toggle="modal" data-bs-target="#saveModal">
+            Save
+          </button>
+        </div>
+      </form>
     </div>
-  {% endif %}
+  </div>
+
+  <!-- Save Modal -->
+  <div class="modal fade" id="saveModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content p-4">
+        <h5 class="modal-title" id="saveModalLabel">Save Plot</h5>
+        <form hx-post="{% url 'save_plot' %}" hx-target="this" hx-swap="none" id="save-form">
+          {% csrf_token %}
+          <input type="text" name="name" class="form-control mb-3" placeholder="Enter title..." required>
+          <div class="d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-success" id="save-btn">Accept</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+
+          <!-- Hidden fields -->
+          <input type="hidden" name="model" id="hidden-model">
+          <input type="hidden" name="shape" id="hidden-shape">
+          <input type="hidden" name="eps_m" id="hidden-eps_m">
+          <input type="hidden" name="eps_i" id="hidden-eps_i">
+          <input type="hidden" name="f_range" id="hidden-f_range">
+          <input type="hidden" name="s_param" id="hidden-s_param">
+          <input type="hidden" name="t_param" id="hidden-t_param">
+          <input type="hidden" name="phi_c_param" id="hidden-phi_c_param">
+          <input type="hidden" name="image_base64" id="hidden-image">
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- JavaScript -->
 <script>
   const clearBtn = document.getElementById('clear-btn');
   const form = document.getElementById('em-form');
@@ -109,16 +133,23 @@ Main - CompositeEM Lab
   const mcParams = document.querySelectorAll('.mc-params');
 
   clearBtn.addEventListener('click', () => {
-    form.reset();
+    const graphContainer = document.getElementById('graph-container');
+    const saveBtn = document.getElementById('save-button');
 
+    if (graphContainer) {
+      graphContainer.innerHTML = '';
+    }
+    if (saveBtn) {
+      saveBtn.classList.add('d-none');
+    }
+
+    form.reset();
     document.getElementById('eps_m').value = '';
     document.getElementById('eps_i').value = '';
     document.getElementById('f_range').value = '';
     document.getElementById('model').selectedIndex = 0;
     document.getElementById('shape').selectedIndex = 0;
-
     mcParams.forEach(el => el.style.display = 'none');
-
     icon.classList.add('rotating');
     setTimeout(() => icon.classList.remove('rotating'), 400);
   });
@@ -130,18 +161,52 @@ Main - CompositeEM Lab
 
   modelSelect.addEventListener('change', toggleMcParams);
   window.addEventListener('DOMContentLoaded', toggleMcParams);
+
+  // Save Modal: Handle Accept Button
+  document.getElementById('save-btn')?.addEventListener('click', function () {
+    const formData = new FormData();
+    formData.append('name', document.querySelector('#save-form input[name="name"]').value);
+    formData.append('model', document.getElementById('model').value);
+    formData.append('shape', document.getElementById('shape').value);
+    formData.append('eps_m', document.getElementById('eps_m').value);
+    formData.append('eps_i', document.getElementById('eps_i').value);
+    formData.append('f_range', document.getElementById('f_range').value);
+    formData.append('s_param', document.getElementById('s_param').value);
+    formData.append('t_param', document.getElementById('t_param').value);
+    formData.append('phi_c_param', document.getElementById('phi_c_param').value);
+
+    const img = document.querySelector('#graph-img');
+    if (img && img.src.startsWith('data:image')) {
+      const base64 = img.src.replace(/^data:image\/png;base64,/, '');
+      formData.append('image_base64', base64);
+    }
+
+    fetch("{% url 'save_plot' %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: formData
+    }).then(response => {
+      if (response.ok) {
+        const modalEl = document.getElementById('saveModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modalInstance.hide();
+      } else {
+        alert("Error saving plot.");
+      }
+    });
+  });
 </script>
 
-<!-- CSS -->
+
 <style>
   .rotate-icon {
     display: inline-block;
     transition: transform 0.4s ease;
   }
-
   .rotating {
     transform: rotate(360deg);
   }
 </style>
-
 {% endblock %}

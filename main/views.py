@@ -19,8 +19,8 @@ def plot_graph(model_func, eps_m, eps_i, f_range):
     for f in f_range:
         eff = model_func(eps_m, eps_i, f)
         if eff is not None:
-            re_vals.append(eff.real - 1)
-            im_vals.append(eff.imag - 1)
+            re_vals.append(eff.real)
+            im_vals.append(eff.imag)
         else:
             re_vals.append(np.nan)
             im_vals.append(np.nan)
